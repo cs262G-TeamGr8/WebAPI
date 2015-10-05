@@ -19,7 +19,6 @@ using IntramuralsAPI.Results;
 
 namespace IntramuralsAPI.Controllers
 {
-    [Authorize]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
