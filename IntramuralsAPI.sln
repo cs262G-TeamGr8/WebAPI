@@ -5,27 +5,6 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntramuralsAPI", "IntramuralsAPI\IntramuralsAPI.csproj", "{BBFA7861-40BD-4B55-B90E-50117D05A000}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "client", "..\client\", "{6CB02620-FD4A-4C0D-9C80-9DF09800A7F1}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_30056"
-		Debug.AspNetCompiler.PhysicalPath = "..\client\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_30056\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_30056"
-		Release.AspNetCompiler.PhysicalPath = "..\client\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_30056\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "30056"
-		DefaultWebSiteLanguage = "Visual C#"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +15,6 @@ Global
 		{BBFA7861-40BD-4B55-B90E-50117D05A000}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBFA7861-40BD-4B55-B90E-50117D05A000}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBFA7861-40BD-4B55-B90E-50117D05A000}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CB02620-FD4A-4C0D-9C80-9DF09800A7F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CB02620-FD4A-4C0D-9C80-9DF09800A7F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CB02620-FD4A-4C0D-9C80-9DF09800A7F1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CB02620-FD4A-4C0D-9C80-9DF09800A7F1}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
