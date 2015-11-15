@@ -19,7 +19,6 @@ using IntramuralsAPI.Results;
 
 namespace IntramuralsAPI.Controllers
 {
-    [Authorize]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
@@ -192,7 +191,7 @@ namespace IntramuralsAPI.Controllers
         }
 
         // POST api/Account/RemoveLogin
-        [Route("RemoveLogin")]
+        [Route("RemoveLogin")] 
         public async Task<IHttpActionResult> RemoveLogin(RemoveLoginBindingModel model)
         {
             if (!ModelState.IsValid)
