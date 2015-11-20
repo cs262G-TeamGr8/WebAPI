@@ -67,7 +67,7 @@ namespace IntramuralsAPI.Controllers
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
-            string sql = "INSERT INTO User VALUES (25, '" + name + "', '" + password + "', '" + email + "')";
+            string sql = "INSERT INTO User (usrname, pw, email) VALUES (" + name + "', '" + password + "', '" + email + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.ExecuteNonQuery();
         }
