@@ -52,15 +52,24 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
-        // POST: api/User
-        [Route("api/user/newUser/{name}")]
+        // POST: api/User/new?name=Michael Jordan&password=abc&email=mj@gmail.com
+        [Route("api/user/new")]
         [HttpPost]
-        public HttpResponseMessage CreateUser(string name)
+        public void NewUser(string name, string password, string email)
         {
-            var response = Request.CreateResponse(HttpStatusCode.Created);
+            MySql.Data.MySqlClient.MySqlConnection conn;
+            string myConnectionString;
 
-            // Generate a link to the new book and set the Location header in the response.
-            return response;
+            // establish connection to database server
+            myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
+                "Uid=bbd3fdf9969899;Pwd=7c348d21;";
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            string sql = "INSERT INTO User VALUES (25, '" + name + "', '" + password + "', '" + email + "')";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            cmd.ExecuteNonQuery();
         }
 
         // PUT: api/User/5
