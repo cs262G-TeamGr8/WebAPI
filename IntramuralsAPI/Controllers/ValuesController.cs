@@ -24,7 +24,7 @@ namespace IntramuralsAPI.Controllers
         // GET api/values/players/Detroit Pistons
         [HttpGet]
         [ActionName("players")]
-        public string Get(string teamName)
+        public string Get(string name)
         {
             dynamic players = new JArray();
             string output = "";
@@ -40,10 +40,10 @@ namespace IntramuralsAPI.Controllers
             conn.Open();
 
             string sql = "SELECT User.usrname FROM User, UserTeam, Team WHERE User.ID = UserTeam.UsrID " + 
-                         "AND Team.ID = UserTeam.TeamID AND Team.name = '" + teamName + "'";
+                         "AND Team.ID = UserTeam.TeamID AND Team.name = '" + name + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader rdr = cmd.ExecuteReader();
-
+            
             // Data is accessible through the DataReader object here.
             while (rdr.Read())
             {
@@ -51,18 +51,22 @@ namespace IntramuralsAPI.Controllers
                     new JProperty("name", rdr[0])));
             }
             rdr.Close();
+            conn.Close();
 
             output = JsonConvert.SerializeObject(players);
             return output;
         }
 
         // POST api/values
-       /* public void Post([FromBody]string value)
+        /*[HttpPost]
+        [ActionName("addPlayer")]
+        public void Post(string playerName)
         {
-        }
+            Console.Write("worked");
+        }*/
 
         // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
+        /*public void Put(int id, [FromBody]string value)
         {
         }
 
