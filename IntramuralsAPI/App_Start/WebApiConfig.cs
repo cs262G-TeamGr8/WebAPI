@@ -25,6 +25,14 @@ namespace IntramuralsAPI
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            config.Routes.MapHttpRoute(
+                name: "PlayerApi",
+                routeTemplate: "api/{controller}/{action}/{name}",
+                defaults: new { teamName = RouteParameter.Optional }
+            );
+
+
         }
     }
 }
