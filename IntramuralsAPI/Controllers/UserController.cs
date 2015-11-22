@@ -8,9 +8,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Web.Http.Cors;
 
 namespace IntramuralsAPI.Controllers
 {
+    [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
 
@@ -67,7 +69,7 @@ namespace IntramuralsAPI.Controllers
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
-            string sql = "INSERT INTO User VALUES (25, '" + name + "', '" + password + "', '" + email + "')";
+            string sql = "INSERT INTO User (usrname, pw, email) VALUES (" + name + "', '" + password + "', '" + email + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.ExecuteNonQuery();
         }
