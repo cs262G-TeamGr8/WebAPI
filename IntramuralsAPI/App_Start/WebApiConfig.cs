@@ -20,6 +20,9 @@ namespace IntramuralsAPI
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            // enable CORS
+            config.EnableCors();
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",

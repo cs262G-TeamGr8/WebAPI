@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Data.SqlClient;
 using System.Data;
 using MySql.Data;
@@ -13,6 +14,7 @@ using Newtonsoft.Json.Linq;
 
 namespace IntramuralsAPI.Controllers
 {
+    [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
     public class ValuesController : ApiController
     {
         // GET api/values

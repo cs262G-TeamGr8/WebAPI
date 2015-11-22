@@ -8,9 +8,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Web.Http.Cors;
 
 namespace IntramuralsAPI.Controllers
 {
+    [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
 
