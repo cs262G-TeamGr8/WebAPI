@@ -59,6 +59,7 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
+
         // POST api/values
         /*[HttpPost]
         [ActionName("addPlayer")]

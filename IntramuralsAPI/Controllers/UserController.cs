@@ -15,8 +15,14 @@ namespace IntramuralsAPI.Controllers
     [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
+        // establish connection to MySQL server
+        string myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
+            "Uid=bbd3fdf9969899;Pwd=7c348d21;";
 
-        // GET: api/user/info/Michael Jordan
+        /* GET: api/user/info/Michael Jordan
+           Retrieves the relevant infomation regarding the specfied user.
+           Returns the ID, name, and email in JSON format
+           */
         [HttpGet]
         [ActionName("info")]
         public string Get(string name)
@@ -25,15 +31,11 @@ namespace IntramuralsAPI.Controllers
             string output = "";
 
             MySql.Data.MySqlClient.MySqlConnection conn;
-            string myConnectionString;
-
-            myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
-                "Uid=bbd3fdf9969899;Pwd=7c348d21;";
-
 
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
+            // sql query
             string sql = "SELECT * FROM User WHERE User.usrname = '" + name + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader rdr = cmd.ExecuteReader();
@@ -54,17 +56,70 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
+        // api/user/schedule/Detroit Pistons
+        [HttpGet]
+        [ActionName("schedule")]
+        public string GetSchedule(string name)
+        {
+            dynamic schedule = new JArray();
+            string output = "";
+
+            MySql.Data.MySqlClient.MySqlConnection conn;
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            string sql = "SELECT Game.ID, Game.team1ID, Game.team2ID, Game.date, Game.score1, Game.score2 " +
+                "FROM User, UserTeam, Team, Game " +
+                "WHERE User.usrname = '" + name + "' " +
+                "AND User.ID = UserTeam.UsrID AND Team.ID = UserTeam.TeamID " +
+                "AND Team.ID IN (Game.team1ID, Game.team2ID)";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+
+            // Data is accessible through the DataReader object here.
+            while (rdr.Read())
+            {
+                schedule.Add(new JObject(
+                    new JProperty("ID", rdr[0]),
+                    new JProperty("home", rdr[1]),
+                    new JProperty("away", rdr[2]),
+                    new JProperty("date", rdr[3]),
+                    new JProperty("home_score", rdr[4]),
+                    new JProperty("away_score", rdr[5])) 
+                    );
+            }
+            rdr.Close();
+
+            // add team names instead of simply team ID's
+            foreach (var game in schedule)
+            {
+                sql = "SELECT Team.name FROM Team WHERE Team.ID = " + game["home"];
+                cmd = new MySqlCommand(sql, conn);
+                rdr = cmd.ExecuteReader();
+                rdr.Read();
+                game["home"] = rdr[0].ToString();
+                rdr.Close();
+
+                sql = "SELECT Team.name FROM Team WHERE Team.ID = " + game["away"];
+                cmd = new MySqlCommand(sql, conn);
+                rdr = cmd.ExecuteReader();
+                rdr.Read();
+                game["away"] = rdr[0].ToString();
+                rdr.Close();
+            }
+
+            conn.Close();
+            output = JsonConvert.SerializeObject(schedule);
+            return output;
+        }
+
         // POST: api/User/new?name=Michael Jordan&password=abc&email=mj@gmail.com
         [Route("api/user/new")]
         [HttpPost]
         public void NewUser(string name, string password, string email)
         {
             MySql.Data.MySqlClient.MySqlConnection conn;
-            string myConnectionString;
-
-            // establish connection to database server
-            myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
-                "Uid=bbd3fdf9969899;Pwd=7c348d21;";
 
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
