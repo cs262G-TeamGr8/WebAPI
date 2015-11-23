@@ -56,6 +56,43 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
+
+        [HttpGet]
+        [ActionName("teams")]
+        public string GetTeams(string name)
+        {
+            dynamic info = new JArray();
+            string output = "";
+
+            MySql.Data.MySqlClient.MySqlConnection conn;
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            // sql query
+            string sql = "SELECT Team.name, Sport.name " +
+                "FROM User, UserTeam, Team, Sport " +
+                "WHERE User.usrname = '" + name + "' " +
+                "AND User.ID = UserTeam.UsrID AND Team.ID = UserTeam.TeamID " +
+                "AND Team.sportID = Sport.ID";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+
+            // Data is accessible through the DataReader object here.
+            while (rdr.Read())
+            {
+                info.Add(new JObject(
+                    new JProperty("name", rdr[0]),
+                    new JProperty("sport", rdr[1]))
+                    );
+            }
+            rdr.Close();
+            conn.Close();
+
+            output = JsonConvert.SerializeObject(info);
+            return output;
+        }
+
         // api/user/schedule/Detroit Pistons
         [HttpGet]
         [ActionName("schedule")]
