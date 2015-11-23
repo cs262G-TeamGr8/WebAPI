@@ -4,30 +4,28 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Web.Http.Cors;
 using MySql.Data;
 using MySql.Data.MySqlClient;
-using System.Web.Http.Cors;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IntramuralsAPI.Controllers
 {
+
     [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
-    public class UserController : ApiController
+    public class LeagueController : ApiController
     {
+
         // establish connection to MySQL server
         string myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
             "Uid=bbd3fdf9969899;Pwd=7c348d21;";
 
-        /* GET: api/user/info/Michael Jordan
-           Retrieves the relevant infomation regarding the specfied user.
-           Returns the ID, name, and email in JSON format
-           */
         [HttpGet]
-        [ActionName("info")]
-        public string Get(string name)
+        [ActionName("teams")]
+        public string GetTeams(string name)
         {
-            dynamic info = new JArray();
+            dynamic teams = new JArray();
             string output = "";
 
             MySql.Data.MySqlClient.MySqlConnection conn;
@@ -35,28 +33,81 @@ namespace IntramuralsAPI.Controllers
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
-            // sql query
-            string sql = "SELECT * FROM User WHERE User.usrname = '" + name + "'";
+            string sql = "SELECT Team.name " +
+                "FROM Team, Sport " +
+                "WHERE Sport.name = '" + name + "' " +
+                "AND Team.sportID = Sport.ID ";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader rdr = cmd.ExecuteReader();
+
 
             // Data is accessible through the DataReader object here.
             while (rdr.Read())
             {
-                info.Add(new JObject(
-                    new JProperty("ID", rdr[0]),
-                    new JProperty("name", rdr[1]),
-                    new JProperty("email", rdr[3]))
+                teams.Add(new JObject(
+                    new JProperty("name", rdr[0]),
+                    new JProperty("wins", 0),
+                    new JProperty("losses", 0))                 
                     );
             }
             rdr.Close();
+
+            int wins = 0;
+            int losses = 0;
+
+            foreach (var team in teams)
+            {
+                sql = "SELECT Game.score1, Game.score2 " +
+                    "FROM Game, Team " +
+                    "WHERE Team.name = '" + team["name"] + "' " +
+                    "AND Team.ID = Game.team1ID " + 
+                    "AND Game.date < DATE(NOW())";
+                cmd = new MySqlCommand(sql, conn);
+                rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (! DBNull.Value.Equals(rdr[0]) && ! DBNull.Value.Equals(rdr[1]))
+                    {
+                        if (Convert.ToInt16(rdr[0]) > Convert.ToInt16(rdr[1]))
+                            wins++;
+                        else
+                            losses++;
+                    }
+                }
+
+                rdr.Close();
+
+                sql = "SELECT Game.score1, Game.score2 " +
+                    "FROM Game, Team " +
+                    "WHERE Team.name = '" + team["name"] + "' " +
+                    "AND Team.ID = Game.team2ID " +
+                    "AND Game.date < DATE(NOW())";
+                cmd = new MySqlCommand(sql, conn);
+                rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (!DBNull.Value.Equals(rdr[0]) && !DBNull.Value.Equals(rdr[1]))
+                    {
+                        if (Convert.ToInt16(rdr[1]) > Convert.ToInt16(rdr[0]))
+                            wins++;
+                        else
+                            losses++;
+                    }
+                }
+
+                rdr.Close();
+
+                team["wins"] = wins;
+                team["losses"] = losses;
+            }
+
+
             conn.Close();
 
-            output = JsonConvert.SerializeObject(info);
+            output = JsonConvert.SerializeObject(teams);
             return output;
         }
 
-        // api/user/schedule/Detroit Pistons
         [HttpGet]
         [ActionName("schedule")]
         public string GetSchedule(string name)
@@ -69,12 +120,11 @@ namespace IntramuralsAPI.Controllers
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
-            string sql = "SELECT Game.ID, Game.team1ID, Game.team2ID, Game.date, Game.score1, Game.score2, Sport.name " +
-                "FROM User, UserTeam, Team, Game, Sport " +
-                "WHERE User.usrname = '" + name + "' " +
-                "AND User.ID = UserTeam.UsrID AND Team.ID = UserTeam.TeamID " +
-                "AND Team.ID IN (Game.team1ID, Game.team2ID)" + 
-                "AND Team.sportID = Sport.ID";
+            string sql = "SELECT Game.ID, Game.team1ID, Game.team2ID, Game.date, Game.score1, Game.score2 " +
+                "FROM Team, Game, Sport " +
+                "WHERE Sport.name = '" + name + "' " +
+                "AND Team.sportID = Sport.ID " +
+                "AND Team.ID IN (Game.team1ID, Game.team2ID)";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader rdr = cmd.ExecuteReader();
 
@@ -87,9 +137,9 @@ namespace IntramuralsAPI.Controllers
                     new JProperty("away", rdr[2]),
                     new JProperty("date", rdr[3]),
                     new JProperty("home_score", rdr[4]),
-                    new JProperty("away_score", rdr[5]),
-                    new JProperty("sport", rdr[6]))
+                    new JProperty("away_score", rdr[5]))
                     );
+                rdr.Read();
             }
             rdr.Close();
 
@@ -116,36 +166,19 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
-        // POST: api/User/new?name=Michael Jordan&password=abc&email=mj@gmail.com
-        [Route("api/user/new")]
-        [HttpPost]
-        public void NewUser(string name, string password, string email)
+        /*// POST: api/League
+        public void Post([FromBody]string value)
         {
-            MySql.Data.MySqlClient.MySqlConnection conn;
-
-            conn = new MySqlConnection(myConnectionString);
-            conn.Open();
-
-            string sql = "INSERT INTO User (usrname, pw, email) VALUES (" + name + "', '" + password + "', '" + email + "')";
-            MySqlCommand cmd = new MySqlCommand(sql, conn);
-            cmd.ExecuteNonQuery();
         }
 
-        // PUT: api/User/5
+        // PUT: api/League/5
         public void Put(int id, [FromBody]string value)
         {
         }
 
-        // DELETE: api/User/5
+        // DELETE: api/League/5
         public void Delete(int id)
         {
-        }
-
-        /*        [HttpGet]
-        [ActionName("info")]
-        public string Get(string name)
-        {
-            return "worked";
         }*/
     }
 }
