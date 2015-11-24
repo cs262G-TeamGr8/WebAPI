@@ -56,6 +56,67 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
+        [Route("api/user/login")]
+        [HttpGet]
+        public string CheckLogin(string email, string password)
+        {
+            dynamic info = new JArray();
+            string output = "";
+
+            MySql.Data.MySqlClient.MySqlConnection conn;
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            // sql query
+            string sql = "SELECT User.pw, User.email, User.usrname, User.ID FROM User WHERE User.email = '" + email + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+
+            // Data is accessible through the DataReader object here.
+            rdr.Read();
+
+            if (rdr.HasRows)
+            {
+                if (rdr[0].ToString() == password)
+                {
+                    info.Add(new JObject(
+                        new JProperty("loggedIn", true),
+                        new JProperty("email", rdr[1]),
+                        new JProperty("name", rdr[2]),
+                        new JProperty("id", rdr[3]),
+                        new JProperty("message", "Login successful"))
+                        );
+                }
+                else
+                {
+                    info.Add(new JObject(
+                        new JProperty("loggedIn", false),
+                        new JProperty("email", rdr[1]),
+                        new JProperty("name", null),
+                        new JProperty("id", null),
+                        new JProperty("message", "Password is incorrect"))
+                        );
+                }
+            }
+            else
+            {
+                info.Add(new JObject(
+                    new JProperty("loggedIn", false),
+                    new JProperty("email", null),
+                    new JProperty("name", null),
+                    new JProperty("id", null),
+                    new JProperty("message", "Email not found"))
+                    );
+            }
+
+            rdr.Close();
+            conn.Close();
+
+            output = JsonConvert.SerializeObject(info);
+            return output;
+        }
+
 
         [HttpGet]
         [ActionName("teams")]

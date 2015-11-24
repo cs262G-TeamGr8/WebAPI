@@ -21,6 +21,41 @@ namespace IntramuralsAPI.Controllers
         string myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
             "Uid=bbd3fdf9969899;Pwd=7c348d21;";
 
+
+        [HttpGet]
+        [ActionName("leagues")]
+        public string GetLeagues(string name)
+        {
+            dynamic schedule = new JArray();
+            string output = "";
+
+            MySql.Data.MySqlClient.MySqlConnection conn;
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            string sql = "SELECT Sport.name " +
+                "FROM Sport, Season, SportSeason " +
+                "WHERE Season.name = '" + name + "' " +
+                "AND Season.ID = SportSeason.seasonID " +
+                "AND Sport.ID = SportSeason.sportID";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+
+            // Data is accessible through the DataReader object here.
+            while (rdr.Read())
+            {
+                schedule.Add(new JObject(
+                    new JProperty("name", rdr[0]))
+                    );
+                rdr.Read();
+            }
+            rdr.Close();
+            conn.Close();
+            output = JsonConvert.SerializeObject(schedule);
+            return output;
+        }
+
         [HttpGet]
         [ActionName("teams")]
         public string GetTeams(string name)
