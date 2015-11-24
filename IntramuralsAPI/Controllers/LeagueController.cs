@@ -18,8 +18,8 @@ namespace IntramuralsAPI.Controllers
     {
 
         // establish connection to MySQL server
-        string myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=IntraTest;" +
-            "Uid=bbd3fdf9969899;Pwd=7c348d21;";
+        string myConnectionString = "Server=us-cdbr-azure-northcentral-a.cleardb.com;Database=Intramurals;" +
+            "Uid=bca5c68bb20976;Pwd=fa8ba175;";
 
 
         [HttpGet]
