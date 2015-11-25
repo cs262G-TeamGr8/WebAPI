@@ -12,7 +12,7 @@ using System.Web.Http.Cors;
 
 namespace IntramuralsAPI.Controllers
 {
-    [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
+    [EnableCors(origins: "http://intramuraltest.azurewebsites.net,http://manji.azurewebsites.net", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
         // establish connection to MySQL server
