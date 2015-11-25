@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace IntramuralsAPI.Controllers
 {
 
-    [EnableCors(origins: "http://intramuraltest.azurewebsites.net", headers: "*", methods: "*")]
+    [EnableCors(origins: "http://intramuraltest.azurewebsites.net,http://manji.azurewebsites.net", headers: "*", methods: "*")]
     public class TeamController : ApiController
     {
 
