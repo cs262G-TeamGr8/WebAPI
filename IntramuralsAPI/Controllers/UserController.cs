@@ -12,6 +12,13 @@ using System.Web.Http.Cors;
 
 namespace IntramuralsAPI.Controllers
 {
+    public class Account
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Email { get; set; }
+    }
+
     [EnableCors(origins: "http://intramuraltest.azurewebsites.net,http://manji.azurewebsites.net", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
@@ -214,19 +221,28 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
-        // POST: api/User/new?name=Michael Jordan&password=abc&email=mj@gmail.com
+        // POST: api/User/new
         [Route("api/user/new")]
         [HttpPost]
-        public void NewUser(string name, string password, string email)
+        public HttpResponseMessage NewUser(Account acct)
         {
             MySql.Data.MySqlClient.MySqlConnection conn;
 
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
+            string name = acct.Username;
+            string password = acct.Password;
+            string email = acct.Email;
+
             string sql = "INSERT INTO User (usrname, pw, email) VALUES (" + name + "', '" + password + "', '" + email + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.ExecuteNonQuery();
+
+            var response = Request.CreateResponse<Account>(HttpStatusCode.Created, acct);
+            string uri = Url.Link("DefaultApi", new { name });
+            response.Headers.Location = new Uri(uri);
+            return response;
         }
 
         // PUT: api/User/5
@@ -238,12 +254,5 @@ namespace IntramuralsAPI.Controllers
         public void Delete(int id)
         {
         }
-
-        /*        [HttpGet]
-        [ActionName("info")]
-        public string Get(string name)
-        {
-            return "worked";
-        }*/
     }
 }
