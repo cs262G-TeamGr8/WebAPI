@@ -223,26 +223,19 @@ namespace IntramuralsAPI.Controllers
 
         // POST: api/User/new
         [Route("api/user/new")]
-        [HttpPost]
-        public HttpResponseMessage NewUser([FromBody]Account acct)
+        [HttpGet]
+        public string NewUser(string name, string password, string email)
         {
             MySql.Data.MySqlClient.MySqlConnection conn;
 
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
-            string name = acct.Username;
-            string password = acct.Password;
-            string email = acct.Email;
-
             string sql = "INSERT INTO User (usrname, pw, email) VALUES (" + name + "', '" + password + "', '" + email + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.ExecuteNonQuery();
 
-            var response = Request.CreateResponse<Account>(HttpStatusCode.Created, acct);
-            string uri = Url.Link("DefaultApi", new { name });
-            response.Headers.Location = new Uri(uri);
-            return response;
+            return name;
         }
 
         // PUT: api/User/5
