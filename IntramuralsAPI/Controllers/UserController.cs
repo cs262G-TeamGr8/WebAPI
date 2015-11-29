@@ -224,7 +224,7 @@ namespace IntramuralsAPI.Controllers
         // POST: api/User/new
         [Route("api/user/new")]
         [HttpPost]
-        public HttpResponseMessage NewUser(Account acct)
+        public HttpResponseMessage NewUser([FromBody]Account acct)
         {
             MySql.Data.MySqlClient.MySqlConnection conn;
 
