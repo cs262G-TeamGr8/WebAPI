@@ -1,1 +1,1 @@
-This is our Web API in ASP.NET written in C#. Our API makes calls to the SQL server and then can return data in JSON format to a GET call from our website. Calls range from getting teams, players, and leagues.
+This is our Web API in ASP.NET written in C#. Our API makes calls to the SQL server and then can return data in JSON format to a GET call from our website. Calls range from getting teams, players, and leagues. 
