@@ -48,7 +48,6 @@ namespace IntramuralsAPI.Controllers
                 schedule.Add(new JObject(
                     new JProperty("name", rdr[0]))
                     );
-                rdr.Read();
             }
             rdr.Close();
             conn.Close();
@@ -87,11 +86,11 @@ namespace IntramuralsAPI.Controllers
             }
             rdr.Close();
 
-            int wins = 0;
-            int losses = 0;
-
             foreach (var team in teams)
             {
+                int wins = 0;
+                int losses = 0;
+
                 sql = "SELECT Game.score1, Game.score2 " +
                     "FROM Game, Team " +
                     "WHERE Team.name = '" + team["name"] + "' " +
