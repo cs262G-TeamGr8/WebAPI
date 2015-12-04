@@ -154,7 +154,7 @@ namespace IntramuralsAPI.Controllers
             conn = new MySqlConnection(myConnectionString);
             conn.Open();
 
-            string sql = "SELECT Game.ID, Game.team1ID, Game.team2ID, Game.date, Game.score1, Game.score2 " +
+            string sql = "SELECT Game.ID, Game.team1ID, Game.team2ID, UNIX_TIMESTAMP(Game.date) * 1000, Game.score1, Game.score2 " +
                 "FROM Team, Game, Sport " +
                 "WHERE Sport.name = '" + name + "' " +
                 "AND Team.sportID = Sport.ID " +
