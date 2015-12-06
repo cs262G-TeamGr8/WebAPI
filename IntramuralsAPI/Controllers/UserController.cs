@@ -19,7 +19,7 @@ namespace IntramuralsAPI.Controllers
         public string Email { get; set; }
     }
 
-    [EnableCors(origins: "http://intramuraltest.azurewebsites.net,http://manji.azurewebsites.net", headers: "*", methods: "*")]
+    [EnableCors(origins: "http://intramuraltest.azurewebsites.net,http://manji.azurewebsites.net,http://localhost:8080", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
         // establish connection to MySQL server
