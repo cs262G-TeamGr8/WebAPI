@@ -12,6 +12,13 @@ using Newtonsoft.Json.Linq;
 
 namespace IntramuralsAPI.Controllers
 {
+    public class Team
+    {
+        public string League { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+    }
+
 
     [EnableCors(origins: "http://intramuraltest.azurewebsites.net,http://manji.azurewebsites.net,http://localhost:8080", headers: "*", methods: "*")]
     public class TeamController : ApiController
@@ -27,7 +34,7 @@ namespace IntramuralsAPI.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/players/Detroit Pistons
+        // GET api/team/players/Detroit Pistons
         [HttpGet]
         [ActionName("players")]
         public string Get(string name)
@@ -116,12 +123,41 @@ namespace IntramuralsAPI.Controllers
             return output;
         }
 
-        /*// POST: api/Team
-        public void Post([FromBody]string value)
+        // POST: api/Team/new
+        [Route("api/team/new")]
+        [HttpPost]
+        public string NewTeam(Team tm)
         {
+            string league = tm.League;
+            string name = tm.Name;
+            string email = tm.Email;
+            DateTime today = DateTime.Now;
+            string startDate = today.ToString("yyyy-MM-dd");
+
+            MySql.Data.MySqlClient.MySqlConnection conn;
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            string sql = "SELECT ID FROM Sport WHERE Sport.name = '" + league + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+            rdr.Read();
+            int sportID = Int16.Parse(rdr[0].ToString());
+            rdr.Close();
+
+            cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO Team (startDate, sportID, name, contact) VALUES (@startDate, @id, @name, @email)";
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+            cmd.Parameters.AddWithValue("@id", sportID);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@email", email);
+            cmd.ExecuteNonQuery();
+
+            return name;
         }
 
-        // PUT: api/Team/5
+        /*// PUT: api/Team/5
         public void Put(int id, [FromBody]string value)
         {
         }

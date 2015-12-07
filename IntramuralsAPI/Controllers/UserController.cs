@@ -245,6 +245,32 @@ namespace IntramuralsAPI.Controllers
             return name;
         }
 
+        // POST: api/user/join?userId=5&teamName=Bulls
+        [Route("api/user/join")]
+        [HttpPost]
+        public string JoinTeam(int userID, string teamName)
+        {
+            MySql.Data.MySqlClient.MySqlConnection conn;
+
+            conn = new MySqlConnection(myConnectionString);
+            conn.Open();
+
+            string sql = "SELECT ID FROM Team WHERE Team.name = '" + teamName + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+            rdr.Read();
+            int teamID = Int16.Parse(rdr[0].ToString());
+            rdr.Close();
+
+            cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO UserTeam (UsrID, TeamID) VALUES (@userID, @teamID)";
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@teamID", teamID);
+            cmd.ExecuteNonQuery();
+
+            return teamName;
+        }
+
         // PUT: api/User/5
         public void Put(int id, [FromBody]string value)
         {
